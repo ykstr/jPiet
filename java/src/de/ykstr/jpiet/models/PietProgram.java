@@ -11,7 +11,7 @@ public class PietProgram {
     private int scalar;
 
     private CodedColor[][] codels;
-    private ArrayList<Codel> blocks;
+    private ArrayList<CodelBlock> blocks = new ArrayList<>();
 
     public PietProgram(BufferedImage sourceImage, int scalar){
         if(sourceImage.getHeight()%scalar != 0 || sourceImage.getWidth()%scalar != 0)throw new IllegalArgumentException("Wrong scalar!");
@@ -25,6 +25,41 @@ public class PietProgram {
                 codels[x][y] = CodedColor.transformToNearest(sourceImage.getRGB(x*scalar, y*scalar));
             }
         }
+
+        detectBlocks();
+    }
+
+    public void detectBlocks(){
+        boolean[][] checkedPositions = new boolean[codels.length][codels[0].length];
+        for(int x = 0; x < codels.length; x++){
+            for(int y = 0; y < codels[x].length; y++){
+                detectSameColorArea(checkedPositions, null, x,y);
+            }
+        }
+    }
+
+    public void detectSameColorArea(boolean[][] checkedPositions, CodelBlock current, int x, int y){
+        if(!isValid(x, y) || checkedPositions[x][y])return;
+        if(current == null){
+            current = new CodelBlock(new Point(x,y), codels[x][y]);
+            blocks.add(current);
+        }
+        if(current.color == codels[x][y]){
+            checkedPositions[x][y] = true;
+            current.codels.add(new Point(x,y));
+            detectSameColorArea(checkedPositions, current, x+1, y);
+            detectSameColorArea(checkedPositions, current, x-1, y);
+            detectSameColorArea(checkedPositions, current, x, y+1);
+            detectSameColorArea(checkedPositions, current, x, y-1);
+        }
+    }
+
+    public boolean isValid(int x, int y){
+        return !(x >= codels.length || y >= codels[0].length || x < 0 || y < 0);
+    }
+
+    public CodedColor getColor(Point pos){
+        return codels[pos.x][pos.y];
     }
 
     public BufferedImage toImage(){

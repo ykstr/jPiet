@@ -18,7 +18,6 @@ public class App {
             e.printStackTrace();
         }
         PietProgram p = new PietProgram(image,PietProgram.findScalar(image));
-        writeImage("./data/piet",p.toImage());
     }
 
     public static void writeImage(String path, BufferedImage image){
