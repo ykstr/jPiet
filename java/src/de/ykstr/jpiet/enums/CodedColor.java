@@ -1,5 +1,7 @@
 package de.ykstr.jpiet.enums;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.awt.*;
 
 public enum CodedColor {
@@ -35,6 +37,53 @@ public enum CodedColor {
             }
         }
         return WHITE;
+    }
+
+    public CodedColor darker(){
+        if(this == WHITE || this == BLACK){
+            throw new IllegalArgumentException("There is no lighter/darker definition for "+this);
+        }
+        int index = this.getIndex();
+        switch (index%3){
+            case 0:
+                return values()[index+2];
+            case 1:
+            case 2:
+                return values()[index-1];
+        }
+        throw new IllegalStateException();
+    }
+
+    public CodedColor lighter(){
+        if(this == WHITE || this == BLACK){
+            throw new IllegalArgumentException("There is no lighter/darker definition for "+this);
+        }
+        int index = this.getIndex();
+        switch (index%3){
+            case 0:
+            case 1:
+                return values()[index+1];
+            case 2:
+                return values()[index-2];
+        }
+        throw new IllegalStateException();
+    }
+
+    public CodedColor nextHue(){
+        return values()[(this.getIndex()+3)%(6*3)];
+    }
+
+    public CodedColor prevHue(){
+        int result = (this.getIndex()-3);
+        return result < 0?values()[result+(6*3)]:values()[result];
+    }
+
+    public  int getIndex(){
+        for(int i = 0; i < values().length; i++){
+            if(values()[i] == this)return i;
+        }
+        //This should never be possible/happen
+        throw new IllegalArgumentException(this+" does not exist in this enum?!");
     }
 
     public static CodedColor transformToNearest(int rgbValue){
