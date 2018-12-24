@@ -54,11 +54,20 @@ public class PietProgram {
         }
     }
 
+    public CodelBlock getBlock(Point pos){
+        if(!isValid(pos.x, pos.y))throw new IllegalArgumentException("Position is not valid for the program!");
+        for(CodelBlock block : blocks){
+            if(block.contains(pos))return block;
+        }
+        return null;
+    }
+
     public boolean isValid(int x, int y){
         return !(x >= codels.length || y >= codels[0].length || x < 0 || y < 0);
     }
 
     public CodedColor getColor(Point pos){
+        if(!isValid(pos.x, pos.y))return CodedColor.BLACK;
         return codels[pos.x][pos.y];
     }
 
